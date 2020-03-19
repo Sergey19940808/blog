@@ -1,0 +1,41 @@
+{% extends 'layout/base.html' %}
+
+{% load bootstrap4 %}
+
+{% block title %}{{ blog.name }}{% endblock title %}
+
+{% block content %}
+    <div class="container">
+        <a href="{% url 'blog:create_record' blog.id  %}">Добавить запись</a>
+    </div>
+    <div class="container">
+        {% for record in records %}
+            <div class="container-item">
+                <p>
+                    Название записи: {{ record.title }}
+                </p>
+                <p>
+                    Текст записи: {{ record.text|slice:":50" }}
+                </p>
+                <p>
+                    Дата создания: {{ record.created_at }}
+                </p>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="container">
+        <span class="step-links">
+            {% if records.has_previous %}
+                <a href="?page=1">Первая</a>
+                |
+                <a href="?page={{ records.previous_page_number }}">Предыдущая</a>
+            {% endif %}
+
+            {% if records.has_next %}
+                <a href="?page={{ records.next_page_number }}">Следующая</a>
+                |
+                <a href="?page={{ records.paginator.num_pages }}">Последняя</a>
+            {% endif %}
+        </span>
+    </div>
+{% endblock content %}

@@ -5,12 +5,20 @@
 {% block title %}Главная{% endblock title %}
 
 {% block content %}
-    <div class="container-right">
-        <a href="{% url 'logout' %}">Выйти</a>
-    </div>
     <div class="container">
         <p class="space">
             Добро пожаловать, {{ user.username }}
         </p>
+    </div>
+    <div class="container">
+        <a class="space" href="{% url 'blog:index' blog.id %}">
+            Мой блог
+        </a>
+        <a class="space" href="">
+            Блоги других пользователей
+        </a>
+        <a class="space" href="">
+            Моя лента новостей
+        </a>
     </div>
 {% endblock content %}

@@ -21,7 +21,11 @@
 
   <body>
       <div>
-          {% block content %}{% endblock content %}
+            <div class="container-right">
+                <a class="space" href="{% url 'main:index' %}">Главная</a>
+                <a href="{% url 'users:logout' %}">Выйти</a>
+            </div>
+            {% block content %}{% endblock content %}
       </div>
   </body>
 </html>

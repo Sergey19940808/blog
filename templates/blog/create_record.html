@@ -3,17 +3,17 @@
 {% load bootstrap4 %}
 {% bootstrap_javascript %}
 
-{% block title %}Войти{% endblock title %}
+{% block title %}Добавить запись{% endblock title %}
 
 {% block content %}
 
     <div class="container-form">
-        <form action="{% url 'users:login' %}" method="post" class="form">
+        <form action="{% url 'blog:create_record' blog.id %}" method="post" class="form">
           {% csrf_token %}
           {% bootstrap_form form %}
           {% buttons %}
             <button type="submit" class="btn btn-primary">
-              Войти
+              Добавить
             </button>
           {% endbuttons %}
         </form>

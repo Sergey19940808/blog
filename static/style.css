@@ -9,6 +9,13 @@
     justify-content: flex-end;
     margin: 20px 40px 0 0;
 }
+.container-item {
+    border: #2872d7 solid 1px;
+    color: #000000;
+    border-radius: 6px;
+    padding: 15px 100px;
+    background-color: #c4dce8;
+}
 .container-form {
     display: flex;
     justify-content: center;
