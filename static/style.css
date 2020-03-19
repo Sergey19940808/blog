@@ -1,0 +1,43 @@
+.container {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    margin: 30px;
+}
+.container-right {
+    display: flex;
+    justify-content: flex-end;
+    margin: 20px 40px 0 0;
+}
+.container-form {
+    display: flex;
+    justify-content: center;
+    margin: 160px 0 0 0;
+}
+.container-form-index {
+    margin: 50px;
+}
+.container-table {
+    margin: 50px;
+}
+.container-short-link {
+    margin: 0 0 0 50px;
+}
+.head-title {
+    text-align: center;
+}
+.form-group {
+    width: 300px;
+}
+.form-c {
+    display: flex;
+}
+.form-button {
+    margin: 0 0 0 15px;
+}
+.space {
+    margin: 0 10px 0 0;
+}
+.alert {
+    width: 200px;
+}
