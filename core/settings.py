@@ -42,6 +42,8 @@ INSTALLED_APPS = [
 
     # Own apps
     'users',
+    'blog',
+    'timeline',
 ]
 
 MIDDLEWARE = [
