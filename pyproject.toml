@@ -7,6 +7,8 @@ authors = ["Sergey Alekseev <alekseyserzh88@gmail.com>"]
 [tool.poetry.dependencies]
 python = "3.7.2"
 django = "3.0.4"
+python-dotenv = "0.12.0"
+psycopg2-binary = "2.8.4"
 
 [tool.poetry.dev-dependencies]
 
