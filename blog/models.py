@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
 from timeline.models import Timeline
@@ -112,3 +112,20 @@ class Record(models.Model):
 
     def __str__(self):
         return f'{self.title}'
+
+
+@receiver(post_save, sender=Record)
+def create_subscribe_record(sender, instance, created, **kwargs):
+    if created:
+        subscribes_by_blog = instance.blog.subscribes_by_blog.all()
+        if subscribes_by_blog:
+            for subscribe_by_blog in subscribes_by_blog:
+                subscribe_by_blog.subscribes_record.add(SubscribeRecord.objects.create(record=instance))
+
+
+@receiver(post_delete, sender=Record)
+def delete_subscribe_record(sender, instance, **kwargs):
+    subscribes_by_blog = instance.blog.subscribes_by_blog.all()
+    if subscribes_by_blog:
+        for subscribe_by_blog in subscribes_by_blog:
+            subscribe_by_blog.subscribes_record.filter(record=instance).delete()

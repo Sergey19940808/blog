@@ -15,9 +15,18 @@ class DetailTimelineView(LoginRequiredMixin, LoginUrlMixin, DetailView):
     def get(self, request, *args, **kwargs):
         timeline = self.get_object()
         subscribes_by_blog = SubscribeByBlog.objects.filter(timeline=timeline)
-        subscribes_record = []
+
+        subscribes_record_ids = []
         for subscribe_by_blog in subscribes_by_blog:
-            subscribes_record.extend(subscribe_by_blog.subscribes_record.all())
+            subscribes_record_ids.extend(
+                [
+                    subscribe_record.get('id')
+                    for subscribe_record in subscribe_by_blog.subscribes_record.all().values('id')
+                ]
+            )
+        subscribes_record = SubscribeRecord.objects.filter(id__in=subscribes_record_ids).order_by('-record__created_at')
+
+
         paginator = Paginator(subscribes_record, 15)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
