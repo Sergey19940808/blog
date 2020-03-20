@@ -11,8 +11,3 @@ class SubscribeByBlogMixin:
         for other_blog in other_blogs:
             other_blog.is_subscribe = True if other_blog.subscribe_by_blog(current_user) else False
         return other_blogs
-
-
-class BaseDispatchPostMixin:
-    def dispatch(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)

@@ -3,16 +3,46 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from timeline.models import Timeline
+
+
+class SubscribeRecord(models.Model):
+    is_read = models.BooleanField(
+        default=False,
+        verbose_name='Запись прочитана пользователем'
+    )
+    record = models.OneToOneField(
+        'blog.Record',
+        on_delete=models.CASCADE,
+        verbose_name='Запись',
+    )
+
+    class Meta:
+        verbose_name = 'Запись из блога на которую подписан пользователь'
+        verbose_name_plural = 'Записи из блога на которую подписан пользователь'
+
+    def __str__(self):
+        return f'{self.id}'
+
 
 class SubscribeByBlog(models.Model):
     user = models.ForeignKey(
-        User,
+        'auth.User',
         on_delete=models.CASCADE,
         verbose_name='Пользователь'
+    )
+    timeline = models.ForeignKey(
+        'timeline.Timeline',
+        on_delete=models.CASCADE,
+        verbose_name='Лента записей'
     )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Дата создания'
+    )
+    subscribes_record = models.ManyToManyField(
+        'blog.SubscribeRecord',
+        verbose_name='Подписка на новость',
     )
 
     class Meta:
@@ -20,7 +50,7 @@ class SubscribeByBlog(models.Model):
         verbose_name_plural = 'Подписки на блоги'
 
     def __str__(self):
-        return f"{self.user}_{self.created_at}"
+        return f'{self.created_at}'
 
 
 class Blog(models.Model):
@@ -29,12 +59,13 @@ class Blog(models.Model):
         verbose_name='Название'
     )
     user = models.OneToOneField(
-        User,
+        'auth.User',
         on_delete=models.CASCADE,
         verbose_name='Пользователь'
     )
     subscribes_by_blog = models.ManyToManyField(
-        SubscribeByBlog,
+        'blog.SubscribeByBlog',
+        verbose_name='Подписки на блог',
     )
 
     class Meta:
@@ -42,7 +73,7 @@ class Blog(models.Model):
         verbose_name_plural = 'Блоги'
 
     def __str__(self):
-        return f"{self.name}"
+        return f'{self.name}'
 
     def subscribe_by_blog(self, current_user):
         return self.subscribes_by_blog.filter(user=current_user).first()
@@ -52,7 +83,7 @@ class Blog(models.Model):
 def create_blog(sender, instance, created, **kwargs):
     if created:
         Blog.objects.create(
-            name=f"Блог пользователя {instance.username}",
+            name=f'Блог пользователя {instance.username}',
             user=instance,
         )
 
@@ -70,7 +101,7 @@ class Record(models.Model):
         verbose_name='Дата создания'
     )
     blog = models.ForeignKey(
-        Blog,
+        'blog.Blog',
         on_delete=models.CASCADE,
         verbose_name='Блог',
     )
@@ -80,4 +111,4 @@ class Record(models.Model):
         verbose_name_plural = 'Записи'
 
     def __str__(self):
-        return f"{self.title}"
+        return f'{self.title}'

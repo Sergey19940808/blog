@@ -6,12 +6,15 @@ from django.views.generic import DetailView, FormView, ListView, CreateView
 from django.core.paginator import Paginator
 
 from blog.forms import RecordForm
-from blog.libs import GetBlogMixin, SubscribeByBlogMixin, BaseDispatchPostMixin
-from blog.models import Blog, Record, SubscribeByBlog
+from blog.libs import GetBlogMixin, SubscribeByBlogMixin
+from blog.models import Blog, Record, SubscribeByBlog, SubscribeRecord
 from core.libs import LoginUrlMixin
 
 
 # Blog Part
+from timeline.models import Timeline
+
+
 class DetailBlogView(LoginRequiredMixin, LoginUrlMixin, DetailView):
     template_name = 'blog/index.html'
     queryset = Blog.objects.all()
@@ -75,21 +78,32 @@ class CreateRecordView(LoginRequiredMixin, LoginUrlMixin, GetBlogMixin, FormView
         return super(CreateRecordView, self).form_valid(form)
 
 
-# Subscribe by blog Part
-class CreateSubscribeByBlogView(BaseDispatchPostMixin, View):
+# Subscribe Part
+class CreateSubscribeByBlogView(View):
+    def dispatch(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
     def post(self, request, *args, **kwargs):
         blog = Blog.objects.get(id=kwargs.get("pk"))
+        timeline = Timeline.objects.get(user=request.user)
         user = request.user
-        subscribe_by_blog = SubscribeByBlog.objects.create(user=user)
+        subscribe_by_blog = SubscribeByBlog.objects.create(user=user, timeline=timeline)
+        subscribe_by_blog.subscribes_record.add(
+            *[SubscribeRecord.objects.create(record=record) for record in blog.record_set.all()]
+        )
         blog.subscribes_by_blog.add(subscribe_by_blog)
         return redirect('blog:other_blogs')
 
 
-class DeleteSubscribeByBlogView(BaseDispatchPostMixin, CreateView):
-    def post(self, request, *args, **kwargs):
+class DeleteSubscribeByBlogView(CreateView):
+    def dispatch(self, request, *args, **kwargs):
+        return self.delete(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
         blog = Blog.objects.get(id=kwargs.get("pk"))
         user = request.user
-        subscribe_by_blog = blog.subscribes_by_blog.filter(user=user)
+        subscribe_by_blog = blog.subscribes_by_blog.filter(user=user).first()
+        subscribe_by_blog.subscribes_record.all().delete()
         subscribe_by_blog.delete()
         return redirect('blog:other_blogs')
 
