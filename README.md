@@ -1,3 +1,12 @@
 # news_blog
-Для запуска нужно набрать команду docker-compose up app или docker-compose up -d app
+1. Для запуска нужно набрать команду docker-compose up app или docker-compose up -d app
+
+2. Далее переходим на http://localhost:8000/
+3. При запуске приложения создается суперпользователь(Если его нет):
+   - username: admin 
+   - password: admin
+4. Поэтому можно воспользоваться этим пользователем и войти на главную 
+и начать работать.
+
+
 
