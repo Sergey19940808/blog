@@ -6,7 +6,7 @@
 
 {% block content %}
     <div class="container">
-        <p class="space">
+        <p class="space color">
             Добро пожаловать, {{ user.username }}
         </p>
     </div>
@@ -14,7 +14,7 @@
         <a class="space" href="{% url 'blog:index' blog.id %}">
             Мой блог
         </a>
-        <a class="space" href="">
+        <a class="space" href="{% url 'blog:other_blogs' %}">
             Блоги других пользователей
         </a>
         <a class="space" href="">

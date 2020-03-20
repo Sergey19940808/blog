@@ -1,0 +1,33 @@
+{% extends 'layout/base.html' %}
+
+{% load bootstrap4 %}
+
+{% block title %}Блоги других пользователей{% endblock title %}
+
+{% block content %}
+    {% if page_obj %}
+        {% for other_blog in page_obj %}
+            <div class="container">
+                <div class="container-item">
+                    <p class="color">
+                        Название блога: {{ other_blog.name }}
+                    </p>
+                    {% if other_blog.is_subscribe %}
+                        <a href="{% url 'blog:delete_subscribe_by_blog' other_blog.id %}">
+                            Отписаться
+                        </a>
+                    {% else %}
+                        <a href="{% url 'blog:create_subscribe_by_blog' other_blog.id %}">
+                            Подписаться
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="container">
+            <p class="color">Нету блогов других пользователей</p>
+        </div>
+    {% endif %}
+    {% include 'layout/pagination.html' %}
+{% endblock content %}

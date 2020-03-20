@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'bootstrap4',
 
     # Own apps
-    'users',
+    'user',
     'blog',
     'timeline',
     'main',

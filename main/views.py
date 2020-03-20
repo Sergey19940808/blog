@@ -1,20 +1,17 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.views.generic import TemplateView
 
 from blog.models import Blog
+from core.libs import LoginUrlMixin
 
 
-class MainView(LoginRequiredMixin, TemplateView):
+class MainView(LoginRequiredMixin, LoginUrlMixin, TemplateView):
     template_name = 'main/index.html'
 
     def get(self, request, *args, **kwargs):
-
-        if request.user.is_anonymous:
-            return redirect('users/login')
-        else:
-            context = self.get_context_data(user=request.user)
-            return render(request, self.template_name, context)
+        context = self.get_context_data(user=request.user)
+        return render(request, self.template_name, context)
 
     def get_context_data(self, **kwargs):
         context = {}
