@@ -19,7 +19,9 @@
                         Дата создания: {{ subscribe_record.record.created_at }}
                     </p>
                     {% if not subscribe_record.is_read %}
-                        <a href="">Отметить прочитанным</a>
+                        <a href="{% url 'timeline:mark_as_read' timeline.id subscribe_record.id %}">
+                            Отметить как прочитанное
+                        </a>
                     {% endif %}
                 </div>
             </div>
