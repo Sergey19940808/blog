@@ -113,7 +113,7 @@ class DeleteSubscribeByBlogView(CreateView):
     def delete(self, request, *args, **kwargs):
         blog = Blog.objects.get(id=kwargs.get("pk"))
         user = request.user
-        subscribe_by_blog = blog.subscribes_by_blog.filter(user=user).first()
+        subscribe_by_blog = blog.subscribes_by_blog.filter(timeline__user=user).first()
         subscribe_by_blog.subscribes_record.all().delete()
         subscribe_by_blog.delete()
         return redirect('blog:list_other_blogs')
