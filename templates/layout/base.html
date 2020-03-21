@@ -22,7 +22,7 @@
   <body>
       <div>
             <div class="container-right">
-                <a class="space" href="{% url 'main:index' %}">Главная</a>
+                <a class="space" href="{% url 'main:index_main' %}">Главная</a>
                 <a href="{% url 'user:logout' %}">Выйти</a>
             </div>
             {% block content %}{% endblock content %}

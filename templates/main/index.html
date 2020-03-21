@@ -11,13 +11,13 @@
         </p>
     </div>
     <div class="container">
-        <a class="space" href="{% url 'blog:index' blog.id %}">
+        <a class="space" href="{% url 'blog:index_blog' blog.id %}">
             Мой блог
         </a>
-        <a class="space" href="{% url 'blog:other_blogs' %}">
+        <a class="space" href="{% url 'blog:list_other_blogs' %}">
             Блоги других пользователей
         </a>
-        <a class="space" href="{% url 'timeline:index' timeline.id %}">
+        <a class="space" href="{% url 'timeline:index_timeline' timeline.id %}">
             Моя лента новостей
         </a>
     </div>

@@ -9,14 +9,12 @@ from blog.forms import RecordForm
 from blog.libs import GetBlogMixin, SubscribeByBlogMixin
 from blog.models import Blog, Record, SubscribeByBlog, SubscribeRecord
 from core.libs import LoginUrlMixin
-
-
-# Blog Part
 from timeline.models import Timeline
 
 
+# Blog Part
 class DetailBlogView(LoginRequiredMixin, LoginUrlMixin, DetailView):
-    template_name = 'blog/index.html'
+    template_name = 'blog/index_blog.html'
     queryset = Blog.objects.all()
 
     def get(self, request, *args, **kwargs):
@@ -35,7 +33,7 @@ class ListOtherBlogView(
     GetBlogMixin,
     ListView
 ):
-    template_name = 'blog/list_other.html'
+    template_name = 'blog/list_other_blog.html'
     queryset = Blog.objects.all()
     paginate_by = 15
     object_list = None
@@ -72,7 +70,7 @@ class CreateRecordView(LoginRequiredMixin, LoginUrlMixin, GetBlogMixin, FormView
 
     def post(self, request, *args, **kwargs):
         self.blog = self.get_blog(request.user)
-        self.success_url = reverse('blog:index', kwargs={'pk': self.blog.id})
+        self.success_url = reverse('blog:index_blog', kwargs={'pk': self.blog.id})
         return super(CreateRecordView, self).post(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -80,6 +78,16 @@ class CreateRecordView(LoginRequiredMixin, LoginUrlMixin, GetBlogMixin, FormView
         record.blog = self.blog
         record.save()
         return super(CreateRecordView, self).form_valid(form)
+
+
+class DetailRecordView(LoginRequiredMixin, LoginUrlMixin, DetailView):
+    template_name = 'blog/index_record.html'
+    queryset = Record.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        blog = Blog.objects.filter(id=kwargs.get('pk')).first()
+        record = Record.objects.filter(blog=blog, id=kwargs.get('id')).first()
+        return render(request, self.template_name, {'record': record})
 
 
 # Subscribe Part
@@ -95,7 +103,7 @@ class CreateSubscribeByBlogView(View):
             *[SubscribeRecord.objects.create(record=record) for record in blog.record_set.all()]
         )
         blog.subscribes_by_blog.add(subscribe_by_blog)
-        return redirect('blog:other_blogs')
+        return redirect('blog:list_other_blogs')
 
 
 class DeleteSubscribeByBlogView(CreateView):
@@ -108,5 +116,5 @@ class DeleteSubscribeByBlogView(CreateView):
         subscribe_by_blog = blog.subscribes_by_blog.filter(user=user).first()
         subscribe_by_blog.subscribes_record.all().delete()
         subscribe_by_blog.delete()
-        return redirect('blog:other_blogs')
+        return redirect('blog:list_other_blogs')
 

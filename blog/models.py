@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save, post_delete
@@ -110,9 +112,11 @@ def create_blog(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Record)
 def create_subscribe_record(sender, instance, created, **kwargs):
+    from manager_tasks.tasks import send_notify
     if created:
         subscribes_by_blog = instance.blog.subscribes_by_blog.all()
         if subscribes_by_blog:
+            send_notify.delay(instance.id, instance.blog.id)
             for subscribe_by_blog in subscribes_by_blog:
                 subscribe_by_blog.subscribes_record.add(SubscribeRecord.objects.create(record=instance))
 

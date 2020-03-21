@@ -22,13 +22,12 @@ class DetailTimelineView(
 
     def get(self, request, *args, **kwargs):
         timeline = self.get_object()
-        subscribes_by_blog = SubscribeByBlog.objects.filter(timeline=timeline)
 
+        subscribes_by_blog = SubscribeByBlog.objects.filter(timeline=timeline)
         subscribes_record_ids = self.get_subscribes_record_ids(subscribes_by_blog)
         subscribes_record = SubscribeRecord.objects.filter(
             id__in=subscribes_record_ids
         ).order_by('-record__created_at')
-
 
         paginator = Paginator(subscribes_record, 15)
         page_number = request.GET.get('page')
@@ -48,4 +47,4 @@ class MarkAsReadView(
         subscribe_record = SubscribeRecord.objects.get(id=kwargs.get('id'))
         subscribe_record.is_read = True
         subscribe_record.save()
-        return redirect(reverse('timeline:index', kwargs={'pk': kwargs.get('pk')}))
+        return redirect(reverse('timeline:index_timeline', kwargs={'pk': kwargs.get('pk')}))
