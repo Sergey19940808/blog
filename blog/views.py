@@ -37,15 +37,19 @@ class ListOtherBlogView(
 ):
     template_name = 'blog/list_other.html'
     queryset = Blog.objects.all()
+    paginate_by = 15
+    object_list = None
 
     def get(self, request, *args, **kwargs):
-        my_blog = self.get_blog(request)
+        self.object_list = self.get_queryset(user=request.user)
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
+    def get_queryset(self, **kwargs):
+        user = kwargs.get('user')
+        my_blog = self.get_blog(user)
         other_blogs = Blog.objects.all().exclude(id=my_blog.id)
-        other_blogs = self.get_is_subscribe(other_blogs, request.user)
-        paginator = Paginator(other_blogs, 15)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-        return render(request, self.template_name, {'page_obj': page_obj})
+        return self.get_is_subscribe(other_blogs, user)
 
 
 # Record Part
@@ -55,7 +59,7 @@ class CreateRecordView(LoginRequiredMixin, LoginUrlMixin, GetBlogMixin, FormView
     blog = None
 
     def get(self, request, *args, **kwargs):
-        self.blog = self.get_blog(request)
+        self.blog = self.get_blog(request.user)
         context = self.get_context_data()
         return render(request, self.template_name, context)
 
@@ -67,7 +71,7 @@ class CreateRecordView(LoginRequiredMixin, LoginUrlMixin, GetBlogMixin, FormView
         }
 
     def post(self, request, *args, **kwargs):
-        self.blog = self.get_blog(request)
+        self.blog = self.get_blog(request.user)
         self.success_url = reverse('blog:index', kwargs={'pk': self.blog.id})
         return super(CreateRecordView, self).post(request, *args, **kwargs)
 
@@ -86,8 +90,7 @@ class CreateSubscribeByBlogView(View):
     def post(self, request, *args, **kwargs):
         blog = Blog.objects.get(id=kwargs.get("pk"))
         timeline = Timeline.objects.get(user=request.user)
-        user = request.user
-        subscribe_by_blog = SubscribeByBlog.objects.create(user=user, timeline=timeline)
+        subscribe_by_blog = SubscribeByBlog.objects.create(timeline=timeline)
         subscribe_by_blog.subscribes_record.add(
             *[SubscribeRecord.objects.create(record=record) for record in blog.record_set.all()]
         )

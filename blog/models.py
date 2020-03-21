@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from timeline.models import Timeline
 
 
+# Models
 class SubscribeRecord(models.Model):
     is_read = models.BooleanField(
         default=False,
@@ -26,11 +27,6 @@ class SubscribeRecord(models.Model):
 
 
 class SubscribeByBlog(models.Model):
-    user = models.ForeignKey(
-        'auth.User',
-        on_delete=models.CASCADE,
-        verbose_name='Пользователь'
-    )
     timeline = models.ForeignKey(
         'timeline.Timeline',
         on_delete=models.CASCADE,
@@ -75,18 +71,6 @@ class Blog(models.Model):
     def __str__(self):
         return f'{self.name}'
 
-    def subscribe_by_blog(self, current_user):
-        return self.subscribes_by_blog.filter(user=current_user).first()
-
-
-@receiver(post_save, sender=User)
-def create_blog(sender, instance, created, **kwargs):
-    if created:
-        Blog.objects.create(
-            name=f'Блог пользователя {instance.username}',
-            user=instance,
-        )
-
 
 class Record(models.Model):
     title = models.fields.CharField(
@@ -112,6 +96,16 @@ class Record(models.Model):
 
     def __str__(self):
         return f'{self.title}'
+
+
+# Signals for models
+@receiver(post_save, sender=User)
+def create_blog(sender, instance, created, **kwargs):
+    if created:
+        Blog.objects.create(
+            name=f'Блог пользователя {instance.username}',
+            user=instance,
+        )
 
 
 @receiver(post_save, sender=Record)
